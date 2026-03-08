@@ -1,33 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../core/app_constants.dart';
 import '../models/listing.dart';
+import 'map_focus_screen.dart';
 
 class ListingDetailScreen extends StatelessWidget {
   const ListingDetailScreen({super.key, required this.listing});
 
   final Listing listing;
-
-  /// Launches Google Maps with turn-by-turn directions to the listing location.
-  Future<void> _openTurnByTurnDirections(Listing listing) async {
-    final url = Uri.parse(
-      'https://www.google.com/maps/dir/?api=1&destination=${listing.latitude},${listing.longitude}&travelmode=driving',
-    );
-    try {
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      }
-    } catch (_) {
-      // Fallback: open Maps with destination only
-      final fallback = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${listing.latitude},${listing.longitude}',
-      );
-      if (await canLaunchUrl(fallback)) {
-        await launchUrl(fallback, mode: LaunchMode.externalApplication);
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +54,6 @@ class ListingDetailScreen extends StatelessWidget {
                 ),
               ),
             ),
-            // Embedded Google Map with marker (assignment requirement)
             if (!hasValidCoords)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -251,9 +230,13 @@ class ListingDetailScreen extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
-                        onPressed: () => _openTurnByTurnDirections(listing),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => MapFocusScreen(listing: listing),
+                          ),
+                        ),
                         icon: const Icon(Icons.directions, size: 22),
-                        label: const Text('Get turn-by-turn directions'),
+                        label: const Text('Show on map'),
                         style: FilledButton.styleFrom(
                           backgroundColor: AppConstants.primaryDark,
                           foregroundColor: Colors.white,

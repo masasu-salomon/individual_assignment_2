@@ -56,32 +56,51 @@ class _MapViewScreenState extends State<MapViewScreen> {
           ),
         ),
       ),
-      body: listings.isEmpty
-          ? const Center(child: Text('No listings to show on map.'))
-          : GoogleMap(
-              initialCameraPosition: const CameraPosition(
-                target: _kigaliCenter,
-                zoom: 12,
-              ),
-              markers: listings
-                  .where((l) => l.latitude != 0 || l.longitude != 0)
-                  .map((listing) => Marker(
-                        markerId: MarkerId(listing.id),
-                        position: LatLng(listing.latitude, listing.longitude),
-                        infoWindow: InfoWindow(
-                          title: listing.name,
-                          snippet: listing.category,
-                        ),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => ListingDetailScreen(listing: listing),
-                          ),
-                        ),
-                      ))
-                  .toSet(),
-              myLocationEnabled: _locationGranted,
-              myLocationButtonEnabled: _locationGranted,
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: const CameraPosition(
+              target: _kigaliCenter,
+              zoom: 12,
             ),
+            markers: listings
+                .where((l) => l.latitude != 0 || l.longitude != 0)
+                .map((listing) => Marker(
+                      markerId: MarkerId(listing.id),
+                      position: LatLng(listing.latitude, listing.longitude),
+                      infoWindow: InfoWindow(
+                        title: listing.name,
+                        snippet: listing.category,
+                      ),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => ListingDetailScreen(listing: listing),
+                        ),
+                      ),
+                    ))
+                .toSet(),
+            myLocationEnabled: _locationGranted,
+            myLocationButtonEnabled: _locationGranted,
+          ),
+          if (listings.isEmpty)
+            Positioned(
+              top: 16,
+              left: 16,
+              right: 16,
+              child: Material(
+                elevation: 2,
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    'No listings to show. Check your connection if the map is blank.',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

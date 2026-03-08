@@ -19,6 +19,8 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    useLibrary("org.apache.http.legacy")
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.individual_assignment2"
@@ -37,10 +39,26 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    packaging {
+        resources {
+            excludes += listOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            )
+        }
+    }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
 }
 
 // Suppress "source/target value 8 is obsolete" and deprecated API warnings from dependencies
